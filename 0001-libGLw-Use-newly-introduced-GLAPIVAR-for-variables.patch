@@ -1,0 +1,73 @@
+From b060a0782f09ebe4f60c8fd4564c11ba043c331f Mon Sep 17 00:00:00 2001
+From: Stefan Dirsch <sndirsch@suse.de>
+Date: Tue, 17 Jul 2018 12:40:00 -0600
+Subject: [PATCH] libGLw: Use newly introduced GLAPIVAR for variables
+
+GLAPI doesn't have an 'extern' in some circumstances. This way,
+variable declarations become definitions (fdo #100916).
+
+Signed-off-by: Stefan Dirsch <sndirsch@suse.de>
+Reviewed-by: Brian Paul <brianp@vmware.com>
+---
+ GLwDrawA.h  | 10 ++++++++--
+ GLwDrawAP.h |  4 ++--
+ 2 files changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/GLwDrawA.h b/GLwDrawA.h
+index b9711c2..316a70d 100644
+--- a/GLwDrawA.h
++++ b/GLwDrawA.h
+@@ -131,12 +131,18 @@
+ #define GLwNaccumAlphaSize	"accumAlphaSize"
+ #define GLwCAccumAlphaSize	"AccumAlphaSize"
+ 
++#if (defined(__GNUC__) && __GNUC__ >= 4) || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590))
++#  define GLAPIVAR extern __attribute__((visibility("default")))
++#else
++#  define GLAPIVAR extern
++#endif
++
+ #ifdef __GLX_MOTIF
+ 
+ typedef struct _GLwMDrawingAreaClassRec	*GLwMDrawingAreaWidgetClass;
+ typedef struct _GLwMDrawingAreaRec	*GLwMDrawingAreaWidget;
+ 
+-GLAPI WidgetClass glwMDrawingAreaWidgetClass;
++GLAPIVAR WidgetClass glwMDrawingAreaWidgetClass;
+ 
+ 
+ #else 
+@@ -144,7 +150,7 @@ GLAPI WidgetClass glwMDrawingAreaWidgetClass;
+ typedef struct _GLwDrawingAreaClassRec	*GLwDrawingAreaWidgetClass;
+ typedef struct _GLwDrawingAreaRec	*GLwDrawingAreaWidget;
+ 
+-GLAPI WidgetClass glwDrawingAreaWidgetClass;
++GLAPIVAR WidgetClass glwDrawingAreaWidgetClass;
+ 
+ 
+ #endif
+diff --git a/GLwDrawAP.h b/GLwDrawAP.h
+index 4ff21b4..6d29849 100644
+--- a/GLwDrawAP.h
++++ b/GLwDrawAP.h
+@@ -59,7 +59,7 @@ typedef struct _GLwMDrawingAreaClassRec {
+   } GLwMDrawingAreaClassRec;
+ 
+ 
+-GLAPI GLwMDrawingAreaClassRec glwMDrawingAreaClassRec;
++GLAPIVAR GLwMDrawingAreaClassRec glwMDrawingAreaClassRec;
+ 
+ 
+ /* XT */
+@@ -70,7 +70,7 @@ typedef struct _GLwDrawingAreaClassRec {
+   GLwDrawingAreaClassPart     glwDrawingArea_class;
+   } GLwDrawingAreaClassRec;
+ 
+-GLAPI GLwDrawingAreaClassRec glwDrawingAreaClassRec;
++GLAPIVAR GLwDrawingAreaClassRec glwDrawingAreaClassRec;
+ 
+ 
+ #endif 
+-- 
+2.21.0
+

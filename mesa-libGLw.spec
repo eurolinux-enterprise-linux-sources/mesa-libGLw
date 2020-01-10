@@ -1,11 +1,13 @@
 Summary: Xt / Motif OpenGL widgets
 Name: mesa-libGLw
 Version: 8.0.0
-Release: 4%{?dist}
+Release: 4.1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 Source0: ftp://ftp.freedesktop.org/pub/mesa/glw/glw-%{version}.tar.bz2
+
+Patch0: 0001-libGLw-Use-newly-introduced-GLAPIVAR-for-variables.patch
 
 BuildRequires: libXt-devel
 BuildRequires: libGL-devel
@@ -37,6 +39,7 @@ Mesa libGLw development package.
 
 %prep
 %setup -q -n glw-%{version}
+%patch0 -p1
 
 %build
 %configure --disable-static --enable-motif
@@ -71,6 +74,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/GLwMDrawAP.h
 
 %changelog
+* Thu May 30 2019 Adam Jackson <ajax@redhat.com> - 8.0.0-4.1
+- Fix external API symbol visibility
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 8.0.0-4
 - Mass rebuild 2014-01-24
 
